@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const { spawn } = require('child_process');
 
+const addTwoNumbers = require('@chrisguest75/array_add_rce');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -9,13 +9,13 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/exploit', function(req, res, next) {
-  console.log(req)
-
   const number1 = Number(req.body.number1)
   const number2 = Number(req.body.number2)
 
+  var answer = addTwoNumbers(number1, number2);
+  console.log(number1 + " + " + number2 + " = " + answer)
     
-  res.render('index', { title: 'Express', answer: number1 + number2  });
+  res.render('index', { title: 'Express', answer: answer });
 });
 
 module.exports = router;

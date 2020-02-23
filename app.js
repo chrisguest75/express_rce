@@ -11,7 +11,9 @@ var usersRouter = require('./routes/users');
 
 var app = express();
 app.use('/css', express.static(__dirname + '/node_modules/bootstrap/dist/css'));
-app.use('/js', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+app.use('/bootstrap', express.static(__dirname + '/node_modules/bootstrap/dist/js'));
+app.use('/jquery', express.static(__dirname + '/node_modules/jquery/dist'));
+app.use('/js', express.static(__dirname + '/js'));
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));

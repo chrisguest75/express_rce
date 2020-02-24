@@ -32,11 +32,14 @@
 
       <form action="/exploit/" method="post">
         <div id="number_rows">
+          {{#numbers}}
           <div class="form-group row">
-            <label class="col-sm-2 nopadding" for="exampleInputInteger1">Number1</label>
-            <input type="number" class="form-control col-sm-5 nopadding" id="exampleInputInteger1" placeholder="{{ number1 }}" value="{{ number1 }}" name="number1">
+            <label class="col-sm-2 nopadding" for="exampleInputInteger{{ @index }}">Number{{ @index }}</label>
+            <input type="number" class="form-control col-sm-5 nopadding" id="exampleInputInteger{{ @index }}" placeholder="{{ . }}" value="{{ . }}" name="number{{ @index }}">
           </div>
+          {{/numbers}}
         </div>
+        
         <button type="submit" class="btn btn-primary">Submit</button>
       </form>
 

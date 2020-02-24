@@ -6,7 +6,7 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "@chrisguest75/array_add_rce": "^1.0.1",
+    "@chrisguest75/array_add_rce": "^1.0.3",
     "bootstrap": "^4.4.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",

@@ -34,8 +34,8 @@
         <div id="number_rows">
           {{#numbers}}
           <div class="form-group row">
-            <label class="col-sm-2 nopadding" for="exampleInputInteger{{ @index }}">Number{{ @index }}</label>
-            <input type="number" class="form-control col-sm-5 nopadding" id="exampleInputInteger{{ @index }}" placeholder="{{ . }}" value="{{ . }}" name="number{{ @index }}">
+            <label class="col-sm-2 nopadding" for="exampleInputInteger{{ id }}">Number{{ id }}</label>
+            <input type="number" class="form-control col-sm-5 nopadding" id="exampleInputInteger{{ id }}" placeholder="{{ value }}" value="{{ value }}" name="number{{ id }}">
           </div>
           {{/numbers}}
         </div>

@@ -1,4 +1,4 @@
-var numbers = 1;
+var numbers = 0;
 function add_number_rows() {
  
     numbers++;

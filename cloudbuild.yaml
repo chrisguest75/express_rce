@@ -6,30 +6,50 @@ timeout: "1200.0s"
 #_IMAGE_NAME: "express_rce_$BRANCH_NAME" 
 # TODO: Check if master and tag without branch name as well
 steps:
+- name: 'gcr.io/cloud-builders/git'
+  entrypoint: /bin/bash
+  args:
+    - '-c'
+    - |
+      git --no-pager log -n 2
+      export build_previous_commit=$(git rev-parse HEAD^)
+      export build_base_commit=$(git merge-base HEAD origin/master)
+      echo "BUILD_PREVIOUS_COMMIT=$build_previous_commit"
+      echo "BUILD_BASE_COMMIT=$build_base_commit"
+      echo "COMMIT_SHA=$COMMIT_SHA"       
+      env | grep "^build_" > /workspace/build_vars
+
 - name: 'gcr.io/cloud-builders/docker'
   entrypoint: /bin/bash
   args:
-  - '-c'
-  - |
-    pwd
-    ls -la
-    git --no-pager log -n 5
-    export PREVIOUS_COMMIT=$(git rev-parse HEAD^)
-    export BASE_COMMIT=$(git merge-base HEAD origin/master)
-    echo "PREVIOUS_COMMIT=$PREVIOUS_COMMIT"
-    echo "BASE_COMMIT=$BASE_COMMIT"
-    echo "CIRCLE_SHA1=$CIRCLE_SHA1"       
-    docker build --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest -t gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} .
-    docker tag gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
-    docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}
-    docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
+    - '-c'
+    - |
+      pwd
+      ls -la  
+      source /workspace/build_vars     
+      echo "BUILD_PREVIOUS_COMMIT=$build_previous_commit"
+      echo "BUILD_BASE_COMMIT=$build_base_commit"            
+      # Cache from previous commit
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:$build_previous_commit
+      docker build --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:$build_previous_commit -t gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} .
+      docker tag gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
 
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: /bin/bash
   args:  
-  - '-c'
-  - | 
-    gcloud beta run deploy expressrce --image gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} --set-env-vars=COMMIT_SHA=${COMMIT_SHA},PROJECT_ID=$PROJECT_ID,IMAGE_NAME=${_IMAGE_NAME}_${BRANCH_NAME} --region europe-west1 --platform managed --quiet --allow-unauthenticated 
+    - '-c'
+    - | 
+      gcloud beta run deploy expressrce --image gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} --set-env-vars=COMMIT_SHA=${COMMIT_SHA},PROJECT_ID=$PROJECT_ID,IMAGE_NAME=${_IMAGE_NAME}_${BRANCH_NAME} --region europe-west1 --platform managed --quiet --allow-unauthenticated 
+
+#- name: 'gcr.io/cloud-builders/gcloud'
+#  entrypoint: /bin/bash
+#  args:  
+#    - '-c'
+#    - |     
+#      gcloud beta run domain-mappings --project $PROJECT_ID --region europe-west1 --platform managed create --service expressrce --domain expressrce.guestcode.uk
 
 # These are images that pushed as well
 images: ['gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}',

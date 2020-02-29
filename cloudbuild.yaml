@@ -44,12 +44,12 @@ steps:
     - | 
       gcloud beta run deploy expressrce --image gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} --set-env-vars=COMMIT_SHA=${COMMIT_SHA},PROJECT_ID=$PROJECT_ID,IMAGE_NAME=${_IMAGE_NAME}_${BRANCH_NAME} --region europe-west1 --platform managed --quiet --allow-unauthenticated 
 
-#- name: 'gcr.io/cloud-builders/gcloud'
-#  entrypoint: /bin/bash
-#  args:  
-#    - '-c'
-#    - |     
-#      gcloud beta run domain-mappings --project $PROJECT_ID --region europe-west1 --platform managed create --service expressrce --domain expressrce.guestcode.uk
+# - name: 'gcr.io/cloud-builders/gcloud'
+#   entrypoint: /bin/bash
+#   args:  
+#     - '-c'
+#     - |     
+#       gcloud beta run domain-mappings --region europe-west1 --platform managed create --service expressrce --domain expressrce.guestcode.uk
 
 # These are images that pushed as well
 images: ['gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}',

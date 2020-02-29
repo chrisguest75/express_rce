@@ -31,6 +31,7 @@
         <p></p>
 
       <form action="/" method="post">
+        <input class="invisible" type="number" class="form-control" id="totalInputs" value="{{ numbers_length }}" name="totalInputs">
         <div id="number_rows">
           {{#numbers}}
           <div class="form-group row">

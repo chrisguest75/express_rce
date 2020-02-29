@@ -1,7 +1,7 @@
-var numbers = 0;
 function add_number_rows() {
- 
+    let numbers = document.getElementById('totalInputs').value; 
     numbers++;
+    document.getElementById('totalInputs').value = numbers;
     var objTo = document.getElementById('number_rows')
     var divtest = document.createElement("div");
 	//divtest.setAttribute("class", "form-group removeclass"+room);
@@ -13,6 +13,3 @@ function add_number_rows() {
     
     objTo.appendChild(divtest);
 }
-   /*function remove_education_fields(rid) {
-	   $('.removeclass'+rid).remove();
-   }*/

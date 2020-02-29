@@ -5,19 +5,22 @@ const [addTwoNumbers, addArrayNumbers] = require('@chrisguest75/array_add_rce');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  let numbers = [{id:0, value:0}];
-  res.render('index', { title: 'Express', numbers: numbers, answer: '0' });
+  let numbers = [{id:1, value:0}];
+  numbers_length = numbers.length
+  res.render('index', { title: 'Express', numbers: numbers, numbers_length: numbers_length, answer: '0' });
 });
 
 router.post('/', function(req, res, next) {
 
   mapped_numbers = [];
-  let index = 0;
+  let index = 1;
   for (const property in req.body) {
-    let num = Number(req.body[property])
-    console.log(property + " = " + num);
-    mapped_numbers.push({id:index, value:num});
-    index++;
+    if(property != "totalInputs") {
+      let num = Number(req.body[property])
+      console.log(property + " = " + num);
+      mapped_numbers.push({id:index, value:num});
+      index++;  
+    }
   }
   
   let numbers = [];
@@ -26,8 +29,8 @@ router.post('/', function(req, res, next) {
   //console.log(numbers);
   var answer = addArrayNumbers(numbers);
   //console.log(numbers + " " + answer)
-    
-  res.render('index', { title: 'Express', numbers: mapped_numbers, answer: answer });
+  numbers_length = numbers.length
+  res.render('index', { title: 'Express', numbers: mapped_numbers, numbers_length: numbers_length, answer: answer });
 });
 
 module.exports = router;

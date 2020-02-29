@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "lint": "./node_modules/.bin/eslint \"./**/*.js\"" 
   },
   "dependencies": {
-    "@chrisguest75/array_add_rce": "^1.0.3",
+    "@chrisguest75/array_add_rce": "^1.1.0",
     "bootstrap": "^4.4.1",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -17,5 +18,13 @@
     "morgan": "~1.9.1",
     "popper.js": "^1.16.1",
     "stylus": "0.54.5"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-standard": "^14.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-node": "^11.0.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }

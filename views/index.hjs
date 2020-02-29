@@ -30,7 +30,7 @@
       <button class="btn btn-success col-sm-3" type="button"  onclick="add_number_rows();">Add extra number</button>
         <p></p>
 
-      <form action="/exploit/" method="post">
+      <form action="/" method="post">
         <div id="number_rows">
           {{#numbers}}
           <div class="form-group row">

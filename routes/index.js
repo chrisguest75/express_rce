@@ -9,27 +9,23 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express', numbers: numbers, answer: '0' });
 });
 
-router.post('/exploit', function(req, res, next) {
+router.post('/', function(req, res, next) {
 
-  let numbers = [];
-
+  mapped_numbers = [];
+  let index = 0;
   for (const property in req.body) {
-    numbers.push(Number(req.body[property]));
+    let num = Number(req.body[property])
+    console.log(property + " = " + num);
+    mapped_numbers.push({id:index, value:num});
+    index++;
   }
-
-
-
-  mapped_numbers = [{id:0, value:967}, 
-    {id:1, value:78}, 
-    {id:2, value:192}, 
-    {id:3, value:168}, 
-    {id:4, value:43}, 
-    {id:5, value:90},
-    {id:6, value:8888}];
-
+  
+  let numbers = [];
   numbers = mapped_numbers.map(a => a.value);
+  //console.log(mapped_numbers);
+  //console.log(numbers);
   var answer = addArrayNumbers(numbers);
-  console.log(numbers + " " + answer)
+  //console.log(numbers + " " + answer)
     
   res.render('index', { title: 'Express', numbers: mapped_numbers, answer: answer });
 });

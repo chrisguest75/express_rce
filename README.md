@@ -21,3 +21,5 @@ docker build -t express_rce .
 docker run --rm -p 8080:3000 express_rce 
 ```
 
+## Cloudbuild
+Ensure the repo is connected in the CloudBuild Github app

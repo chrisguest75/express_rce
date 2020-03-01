@@ -17,8 +17,10 @@ DEBUG=vulnerability:* npm start
 
 ## The container.
 ```
-docker build -t express_rce .
-docker run --rm -p 8080:3000 express_rce 
+docker build -f Dockerfile -t express_rce .
+docker build -f root.Dockerfile -t express_rce_root .
+docker run -d --rm -p 8080:3000 express_rce 
+docker run -d --rm -p 8080:3000 express_rce_root 
 ```
 
 ## Cloudbuild

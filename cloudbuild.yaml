@@ -37,12 +37,31 @@ steps:
       docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}
       docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest
 
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: /bin/bash
+  args:
+    - '-c'
+    - |
+      pwd
+      ls -la  
+      source /workspace/build_vars     
+      echo "BUILD_PREVIOUS_COMMIT=$build_previous_commit"
+      echo "BUILD_BASE_COMMIT=$build_base_commit"            
+      # Cache from previous commit
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:latest
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:$build_previous_commit
+      docker build -f root.Dockerfile --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:latest --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:$build_previous_commit -t gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA} .
+      docker tag gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA} gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:latest
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA}
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:latest
+
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: /bin/bash
   args:  
     - '-c'
     - | 
       gcloud beta run deploy expressrce --image gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA} --set-env-vars=COMMIT_SHA=${COMMIT_SHA},PROJECT_ID=$PROJECT_ID,IMAGE_NAME=${_IMAGE_NAME}_${BRANCH_NAME} --region europe-west1 --platform managed --quiet --allow-unauthenticated 
+      gcloud beta run deploy expressrceroot --image gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA} --set-env-vars=COMMIT_SHA=${COMMIT_SHA},PROJECT_ID=$PROJECT_ID,IMAGE_NAME=${_IMAGE_NAME}_${BRANCH_NAME}_root --region europe-west1 --platform managed --quiet --allow-unauthenticated 
 
 # - name: 'gcr.io/cloud-builders/gcloud'
 #   entrypoint: /bin/bash
@@ -50,7 +69,9 @@ steps:
 #     - '-c'
 #     - |     
 #       gcloud beta run domain-mappings --region europe-west1 --platform managed create --service expressrce --domain expressrce.guestcode.uk
+#       gcloud beta run domain-mappings --region europe-west1 --platform managed create --service expressrceroot --domain expressrcert.guestcode.uk
 
 # These are images that pushed as well
 images: ['gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}',
+        'gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA}',
         'gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest']

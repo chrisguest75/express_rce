@@ -55,6 +55,24 @@ steps:
       docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA}
       docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:latest
 
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: /bin/bash
+  args:
+    - '-c'
+    - |
+      pwd
+      ls -la  
+      source /workspace/build_vars     
+      echo "BUILD_PREVIOUS_COMMIT=$build_previous_commit"
+      echo "BUILD_BASE_COMMIT=$build_base_commit"            
+      # Cache from previous commit
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:latest
+      docker pull gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:$build_previous_commit
+      docker build -f distroless.Dockerfile --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:latest --cache-from=gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:$build_previous_commit -t gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:${COMMIT_SHA} .
+      docker tag gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:${COMMIT_SHA} gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:latest
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:${COMMIT_SHA}
+      docker push gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:latest
+    
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: /bin/bash
   args:  
@@ -74,4 +92,5 @@ steps:
 # These are images that pushed as well
 images: ['gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:${COMMIT_SHA}',
         'gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_root:${COMMIT_SHA}',
+        'gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}_distroless:${COMMIT_SHA}',        
         'gcr.io/$PROJECT_ID/$REPO_NAME/${_IMAGE_NAME}_${BRANCH_NAME}:latest']
